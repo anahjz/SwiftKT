@@ -96,7 +96,7 @@ jobs:
           time xcodebuild clean build \
             -project SwiftKT.xcodeproj \
             -scheme SwiftKT \
-            -destination 'platform=macOS' \
+            -destination 'generic/platform=macOS' \
             -configuration Release \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
