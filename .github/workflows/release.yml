@@ -278,14 +278,10 @@ jobs:
       - name: Verify XCFramework assets exist
         run: |
           VERSION="${{ steps.ver.outputs.version }}"
-          ZIP="build/SwiftKT-${VERSION}.xcframework.zip"
+          # Artifact uploads build/ contents, so download extracts to workspace root (no build/ folder)
+          ZIP="SwiftKT-${VERSION}.xcframework.zip"
           if [ ! -f "$ZIP" ]; then
-            echo "Missing $ZIP"
-            echo "Listing workspace:"
-            ls -la
-            echo "Listing build/ (if present):"
-            ls -la build/ 2>/dev/null || true
-            exit 1
+            echo "Missing $ZIP"; ls -la; exit 1
           fi
           echo "Found $ZIP ($(du -h "$ZIP" | cut -f1))"
       - name: Generate release notes (same structure as GitLab)
@@ -311,7 +307,7 @@ jobs:
           echo "### XCFramework" >> release_notes.md
           echo "Download the attached \`SwiftKT-${VERSION}.xcframework.zip\`" >> release_notes.md
           echo "" >> release_notes.md
-          echo "**Checksum:** \`$(cut -d' ' -f1 build/SwiftKT-${VERSION}.xcframework.zip.sha256)\`" >> release_notes.md
+          echo "**Checksum:** \`$(cut -d' ' -f1 SwiftKT-${VERSION}.xcframework.zip.sha256)\`" >> release_notes.md
       - name: Create Release and upload assets (same assets as GitLab)
         uses: softprops/action-gh-release@v2
         with:
@@ -321,11 +317,11 @@ jobs:
           draft: false
           generate_release_notes: true
           files: |
-            build/SwiftKT-${{ steps.ver.outputs.version }}.xcframework.zip
-            build/SwiftKT-${{ steps.ver.outputs.version }}.xcframework.zip.sha256
-            build/Package-Binary.swift
-            build/SwiftKT-Binary.podspec
-            build/INSTALLATION.md
+            SwiftKT-${{ steps.ver.outputs.version }}.xcframework.zip
+            SwiftKT-${{ steps.ver.outputs.version }}.xcframework.zip.sha256
+            Package-Binary.swift
+            SwiftKT-Binary.podspec
+            INSTALLATION.md
 
   # ---- Publish CocoaPods (same as GitLab: push Binary podspec) ----
   publish-cocoapods:
