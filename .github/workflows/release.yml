@@ -169,7 +169,7 @@ jobs:
             spec.description   = 'Pre-compiled XCFramework for SwiftKT'
             spec.homepage      = '${REPO}'
             spec.license       = { :type => 'MIT', :file => 'LICENSE' }
-            spec.author        = { 'SwiftKT' => 'your-email@example.com' }
+            spec.author        = { 'anahjz' => 'https://github.com/anahjz' }
             spec.source        = {
               :http => '${REPO}/releases/download/${TAG}/SwiftKT-${VERSION}.xcframework.zip',
               :sha256 => '${CHECKSUM}'

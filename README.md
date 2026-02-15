@@ -52,21 +52,21 @@ if let regex = "l+".kotlin.toRegex() {
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/YourOrg/SwiftKT.git", from: "1.0.0")
+    .package(url: "https://github.com/anahjz/SwiftKT.git", from: "1.0.0")
 ]
 ```
 
 Then add `SwiftKT` to your target dependencies.
 
-### CocoaPods
+### CocoaPods (binary)
 
 ```ruby
-pod 'SwiftKT', '~> 1.0'
+pod 'SwiftKT-Binary', '~> 1.0'
 ```
 
 ### XCFramework
 
-From each [GitHub Release](https://github.com/YourOrg/SwiftKT/releases), download `SwiftKT-<version>.xcframework.zip`, extract it, and add `SwiftKT.xcframework` to your Xcode project under **Frameworks, Libraries, and Embedded Content**.
+From each [GitHub Release](https://github.com/anahjz/SwiftKT/releases), download `SwiftKT-<version>.xcframework.zip`, extract it, and add `SwiftKT.xcframework` to your Xcode project under **Frameworks, Libraries, and Embedded Content**.
 
 ## API surface (first milestone)
 
@@ -84,13 +84,12 @@ See [Documentation/BehavioralDifferences.md](Documentation/BehavioralDifferences
 
 ## Releasing (XCFramework + CocoaPods)
 
-1. Update `SwiftKT.podspec`: set `spec.version` and fix `homepage` / `source` URLs for your repo.
-2. Push a version tag: `git tag v1.0.0 && git push origin v1.0.0`
-3. The [Release workflow](.github/workflows/release.yml) will:
+1. Push a version tag: `git tag v1.0.0 && git push origin v1.0.0`
+2. The [Release workflow](.github/workflows/release.yml) will:
    - Build an XCFramework (iOS, iOS Simulator, macOS) and attach it to the GitHub Release
-   - Publish the **source** pod to CocoaPods if `COCOAPODS_TRUNK_TOKEN` is set in repo **Settings → Secrets and variables → Actions**
+   - Publish **SwiftKT-Binary** to CocoaPods if `COCOAPODS_TRUNK_TOKEN` is set in repo **Settings → Secrets and variables → Actions**
 
-To get a CocoaPods trunk token: run `pod trunk register your@email.com 'Your Name'` once, then use the token from `~/.cocoapods/token` or the CocoaPods site.
+To get a CocoaPods trunk token: run `pod trunk register your@email.com 'Your Name'` once, then add the token as the `COCOAPODS_TRUNK_TOKEN` secret.
 
 ## License
 
