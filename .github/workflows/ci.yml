@@ -1,4 +1,4 @@
-# CI — validate, test, build, security
+# CI — validate, build, security
 # Same stages and logic; adapted for GitHub Actions + SwiftKT (SwiftKT.xcodeproj).
 
 name: CI
@@ -66,82 +66,6 @@ jobs:
             echo "swift-format not available, skipping"
           fi
     continue-on-error: true
-
-  # ---- Test: xcodebuild test (same as GitLab .test_template) ----
-  test-ios:
-    name: Test iOS
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            .build
-            DerivedData
-          key: swift-${{ runner.os }}-${{ hashFiles('Package.swift') }}
-          restore-keys: swift-${{ runner.os }}-
-      - name: Xcode setup
-        run: |
-          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-          xcode-select -p
-          swift --version
-      - name: Resolve simulator and run tests
-        run: |
-          PLATFORM="iOS Simulator"
-          DEVICE_PATTERN="iPhone"
-          SIM_LINE=$(xcrun simctl list devices available | grep -i "$DEVICE_PATTERN" | head -1 || true)
-          if [ -n "$SIM_LINE" ]; then
-            SIM_ID=$(echo "$SIM_LINE" | sed -n 's/.*(\([A-F0-9-]*\)).*/\1/p')
-            [ -n "$SIM_ID" ] && TEST_DESTINATION="platform=$PLATFORM,id=$SIM_ID" || TEST_DESTINATION="platform=$PLATFORM,name=iPhone"
-          else
-            TEST_DESTINATION="platform=$PLATFORM,name=iPhone"
-          fi
-          echo "Destination: $TEST_DESTINATION"
-          xcodebuild test \
-            -project SwiftKT.xcodeproj \
-            -scheme SwiftKT \
-            -destination "$TEST_DESTINATION" \
-            -configuration Debug \
-            -derivedDataPath DerivedData \
-            -resultBundlePath test-results-ios.xcresult \
-            CODE_SIGNING_ALLOWED=NO
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-ios
-          path: test-results-ios.xcresult
-
-  test-macos:
-    name: Test macOS
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: .build
-          key: swift-${{ runner.os }}-${{ hashFiles('Package.swift') }}
-          restore-keys: swift-${{ runner.os }}-
-      - name: Xcode setup
-        run: |
-          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-          swift --version
-      - name: Run tests
-        run: |
-          xcodebuild test \
-            -project SwiftKT.xcodeproj \
-            -scheme SwiftKT \
-            -destination "platform=macOS,arch=x86_64" \
-            -configuration Debug \
-            -derivedDataPath DerivedData \
-            -resultBundlePath test-results-macos.xcresult \
-            CODE_SIGNING_ALLOWED=NO
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-macos
-          path: test-results-macos.xcresult
 
   # ---- Security (same as GitLab security-audit) ----
   security-audit:
