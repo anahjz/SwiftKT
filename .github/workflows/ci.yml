@@ -1,0 +1,104 @@
+# CI — validate, build, security
+# Same stages and logic; adapted for GitHub Actions + SwiftKT (SwiftKT.xcodeproj).
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  LANG: en_US.UTF-8
+
+jobs:
+  # ---- Validate: Swift Package (same as GitLab swift-package-validate) ----
+  swift-package-validate:
+    name: Swift Package validate
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build
+            DerivedData
+          key: swift-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }}
+          restore-keys: swift-${{ runner.os }}-
+      - name: Xcode setup
+        run: |
+          xcode-select -p
+          swift --version
+          xcodebuild -version
+      - name: Resolve & validate
+        run: |
+          swift package resolve
+          swift package dump-package
+          swift build --build-tests
+
+  # ---- Code quality (same as GitLab: SwiftLint + swift-format) ----
+  code-quality:
+    name: Code quality
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode setup
+        run: |
+          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+          swift --version
+      - name: SwiftLint
+        run: |
+          if command -v swiftlint >/dev/null 2>&1; then
+            swiftlint --strict
+          else
+            brew install swiftlint
+            swiftlint --strict
+          fi
+      - name: swift-format
+        run: |
+          if command -v swift-format >/dev/null 2>&1; then
+            swift-format lint --recursive Sources/ Tests/ || true
+          else
+            echo "swift-format not available, skipping"
+          fi
+    continue-on-error: true
+
+  # ---- Security (same as GitLab security-audit) ----
+  security-audit:
+    name: Security audit
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for potential secrets
+        run: |
+          if grep -r -i -E "(password|secret|key|token|api_key)" Sources/ Tests/ --include="*.swift" 2>/dev/null | grep -v "// " | head -10; then
+            echo "⚠️ Potential secrets found in code. Please review."
+          fi
+    continue-on-error: true
+
+  # ---- Build performance (same as GitLab: xcodebuild clean build) ----
+  build-performance:
+    name: Build performance
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode setup
+        run: |
+          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+      - name: Build timing
+        run: |
+          echo "Testing build performance..."
+          time xcodebuild clean build \
+            -project SwiftKT.xcodeproj \
+            -scheme SwiftKT \
+            -destination 'generic/platform=macOS' \
+            -configuration Release \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet
+    continue-on-error: true

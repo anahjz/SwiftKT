@@ -13,7 +13,7 @@ let package = Package(
         .library(
             name: "SwiftKT",
             targets: ["SwiftKT"]
-        ),
+        )
     ],
     targets: [
         .target(
@@ -25,6 +25,6 @@ let package = Package(
             name: "SwiftKTTests",
             dependencies: ["SwiftKT"],
             path: "Tests/SwiftKTTests"
-        ),
+        )
     ]
 )

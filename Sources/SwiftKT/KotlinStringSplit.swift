@@ -50,21 +50,21 @@ extension KotlinStringProxy {
         let fullRange = NSRange(location: 0, length: nsString.length)
         var matches: [NSRange] = []
         regex.enumerateMatches(in: base, options: [], range: fullRange) { match, _, _ in
-            guard let m = match else { return }
-            matches.append(m.range)
+            guard let matchResult = match else { return }
+            matches.append(matchResult.range)
         }
         if matches.isEmpty {
             return [base]
         }
         var result: [String] = []
         var start = 0
-        for (_, m) in matches.enumerated() {
+        for matchRange in matches {
             if limit > 0 && result.count + 1 >= limit {
                 result.append(nsString.substring(from: start))
                 return result
             }
-            result.append(nsString.substring(with: NSRange(location: start, length: m.location - start)))
-            start = m.location + m.length
+            result.append(nsString.substring(with: NSRange(location: start, length: matchRange.location - start)))
+            start = matchRange.location + matchRange.length
         }
         result.append(nsString.substring(from: start))
         return result

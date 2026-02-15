@@ -52,11 +52,21 @@ if let regex = "l+".kotlin.toRegex() {
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/YourOrg/SwiftKT.git", from: "1.0.0")
+    .package(url: "https://github.com/anahjz/SwiftKT.git", from: "1.0.0")
 ]
 ```
 
 Then add `SwiftKT` to your target dependencies.
+
+### CocoaPods (binary)
+
+```ruby
+pod 'SwiftKT-Binary', '~> 1.0'
+```
+
+### XCFramework
+
+From each [GitHub Release](https://github.com/anahjz/SwiftKT/releases), download `SwiftKT-<version>.xcframework.zip`, extract it, and add `SwiftKT.xcframework` to your Xcode project under **Frameworks, Libraries, and Embedded Content**.
 
 ## API surface (first milestone)
 
@@ -72,6 +82,15 @@ Then add `SwiftKT` to your target dependencies.
 
 See [Documentation/BehavioralDifferences.md](Documentation/BehavioralDifferences.md) for how SwiftKT differs from Kotlin (Unicode, indexing, regex, locale).
 
+## Releasing (XCFramework + CocoaPods)
+
+1. Push a version tag: `git tag v1.0.0 && git push origin v1.0.0`
+2. The [Release workflow](.github/workflows/release.yml) will:
+   - Build an XCFramework (iOS, iOS Simulator, macOS) and attach it to the GitHub Release
+   - Publish **SwiftKT-Binary** to CocoaPods if `COCOAPODS_TRUNK_TOKEN` is set in repo **Settings → Secrets and variables → Actions**
+
+To get a CocoaPods trunk token: run `pod trunk register your@email.com 'Your Name'` once, then add the token as the `COCOAPODS_TRUNK_TOKEN` secret.
+
 ## License
 
-See repository license.
+MIT. See [LICENSE](LICENSE).

@@ -29,7 +29,7 @@ extension KotlinStringProxy {
 
     /// Returns a string repeated n times (Kotlin: `repeat(n)`).
     /// Kotlin throws for n < 0; we return "" for n <= 0 to avoid force unwraps.
-    public func `repeat`(n: Int) -> String {
+    public func `repeat`(n: Int) -> String { // swiftlint:disable:this identifier_name
         guard n > 0 else { return "" }
         return String(repeating: base, count: n)
     }
