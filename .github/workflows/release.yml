@@ -201,7 +201,7 @@ jobs:
             spec.summary       = 'SwiftKT - Binary Distribution'
             spec.description   = 'Pre-compiled XCFramework for SwiftKT'
             spec.homepage      = '${REPO}'
-            spec.license       = { :type => 'MIT', :file => 'LICENSE' }
+            spec.license       = { :type => 'MIT' }
             spec.author        = { 'anahjz' => 'https://github.com/anahjz' }
             spec.source        = {
               :http => '${REPO}/releases/download/${TAG}/SwiftKT-${VERSION}.xcframework.zip',
