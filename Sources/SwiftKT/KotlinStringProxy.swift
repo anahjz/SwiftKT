@@ -62,29 +62,29 @@ public struct KotlinStringProxy: Sendable {
     /// Returns the character at the given index (Kotlin: `get(index)`).
     /// - Throws: `KotlinStringError.indexOutOfBounds` if index is negative or >= length.
     public func get(index: Int) throws -> Character {
-        guard let si = KotlinStringIndex.stringIndex(for: base, kotlinIndex: index),
-              si < base.endIndex else {
+        guard let stringIndex = KotlinStringIndex.stringIndex(for: base, kotlinIndex: index),
+              stringIndex < base.endIndex else {
             throw KotlinStringError.indexOutOfBounds(index: index, length: base.count)
         }
-        return base[si]
+        return base[stringIndex]
     }
 
     /// Returns the first character (Kotlin: `first()`).
     /// - Throws: NoSuchElementException in Kotlin when empty; we throw KotlinStringError.
     public func first() throws -> Character {
-        guard let c = base.first else {
+        guard let character = base.first else {
             throw KotlinStringError.indexOutOfBounds(index: 0, length: 0)
         }
-        return c
+        return character
     }
 
     /// Returns the last character (Kotlin: `last()`).
     /// - Throws: NoSuchElementException in Kotlin when empty; we throw KotlinStringError.
     public func last() throws -> Character {
-        guard let c = base.last else {
+        guard let character = base.last else {
             throw KotlinStringError.indexOutOfBounds(index: -1, length: 0)
         }
-        return c
+        return character
     }
 
     /// Returns the first character, or nil if the string is empty (Kotlin: `firstOrNull()`).

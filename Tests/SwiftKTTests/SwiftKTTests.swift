@@ -161,16 +161,16 @@ final class SwiftKTTests: XCTestCase {
     }
 
     func testTrimIndent() {
-        let s = """
+        let multilineText = """
             abc
             def
             """
-        XCTAssertEqual(s.kotlin.trimIndent(), "abc\ndef")
+        XCTAssertEqual(multilineText.kotlin.trimIndent(), "abc\ndef")
     }
 
     func testTrimMargin() {
-        let s = "|a\n|b"
-        XCTAssertEqual(s.kotlin.trimMargin(marginPrefix: "|"), "a\nb")
+        let textWithMargin = "|a\n|b"
+        XCTAssertEqual(textWithMargin.kotlin.trimMargin(marginPrefix: "|"), "a\nb")
     }
 
     // MARK: - Split
@@ -202,8 +202,8 @@ final class SwiftKTTests: XCTestCase {
     func testToRegex() {
         let regex = "l+".kotlin.toRegex()
         XCTAssertNotNil(regex)
-        if let r = regex {
-            XCTAssertTrue("hello".kotlin.contains(r))
+        if let compiledRegex = regex {
+            XCTAssertTrue("hello".kotlin.contains(compiledRegex))
         }
         if let pattern = "hel+o".kotlin.toRegex() {
             XCTAssertTrue("helllo".kotlin.matches(pattern))
@@ -225,10 +225,10 @@ final class SwiftKTTests: XCTestCase {
     }
 
     func testZip() {
-        let z = "ab".kotlin.zip("xy")
-        XCTAssertEqual(z.count, 2)
-        XCTAssertEqual(z[0].0, "a")
-        XCTAssertEqual(z[0].1, "x")
+        let zipped = "ab".kotlin.zip("xy")
+        XCTAssertEqual(zipped.count, 2)
+        XCTAssertEqual(zipped[0].0, "a")
+        XCTAssertEqual(zipped[0].1, "x")
     }
 
     func testFilter() {
@@ -267,10 +267,10 @@ final class SwiftKTTests: XCTestCase {
     }
 
     func testUnicodeAccents() {
-        let s = "café"
-        XCTAssertEqual(s.kotlin.length, 4)
-        XCTAssertEqual(try s.kotlin.get(index: 3), "é")
-        XCTAssertEqual(s.kotlin.indexOf("é"), 3)
+        let accentedString = "café"
+        XCTAssertEqual(accentedString.kotlin.length, 4)
+        XCTAssertEqual(try accentedString.kotlin.get(index: 3), "é")
+        XCTAssertEqual(accentedString.kotlin.indexOf("é"), 3)
     }
 
     func testEmptyAndSingleChar() {
