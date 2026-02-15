@@ -1,0 +1,232 @@
+# CI — mirrors GitLab CI: pre-validate, validate, test, build, security
+# Same stages and logic; adapted for GitHub Actions + SwiftKT (SwiftKT.xcodeproj).
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  LANG: en_US.UTF-8
+
+jobs:
+  # ---- Pre-validate: PR title = MR title (exact GitLab logic) ----
+  validate-pr-title:
+    name: Validate PR title
+    runs-on: macos-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Check MR title format and task ID (GitLab-equivalent)
+        run: |
+          echo "[INFO] Checking PR title format and task ID consistency..."
+          MR_TITLE="${{ github.event.pull_request.title }}"
+          BRANCH_NAME="${{ github.head_ref }}"
+          if [ -z "$BRANCH_NAME" ]; then
+            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+            echo "[INFO] Using branch from GITHUB_REF"
+          fi
+          echo "PR Title: $MR_TITLE"
+          echo "Branch Name: $BRANCH_NAME"
+
+          # Same pattern as GitLab: type(scope)?: description (IN-####) [-internal]
+          VALID_PATTERN="^(feat|fix|refactor|perf|style|test|docs|chore|build|ci|revert)(\(.*\))?: .* \(IN-[0-9]+\)( -internal)?$"
+          if [[ ! "$MR_TITLE" =~ $VALID_PATTERN ]]; then
+            echo "[ERROR] PR title does not follow the commit message convention!"
+            echo "Expected format: <type>(scope)?: <description> (IN-####) [-internal]"
+            echo "Valid types: feat, fix, refactor, perf, style, test, docs, chore, build, ci, revert"
+            echo "Examples: feat: add user authentication (IN-123)"
+            exit 1
+          fi
+
+          if [[ "$MR_TITLE" =~ \(IN-([0-9]+)\) ]]; then
+            TITLE_TASK_ID="${BASH_REMATCH[1]}"
+            echo "Task ID from PR title: IN-$TITLE_TASK_ID"
+          else
+            echo "[ERROR] Could not extract task ID from PR title"
+            exit 1
+          fi
+
+          BRANCH_NAME=$(echo "$BRANCH_NAME" | xargs)
+          if [[ "$BRANCH_NAME" =~ IN-([0-9]+) ]]; then
+            BRANCH_TASK_ID="${BASH_REMATCH[1]}"
+            echo "Task ID from branch name: IN-$BRANCH_TASK_ID"
+          else
+            echo "[ERROR] Branch name does not contain a task ID (IN-####)"
+            echo "Supported: feature/IN-123-description, fix/IN-456-bug-fix"
+            exit 1
+          fi
+
+          if [[ "$TITLE_TASK_ID" != "$BRANCH_TASK_ID" ]]; then
+            echo "[ERROR] Task ID mismatch! PR: IN-$TITLE_TASK_ID, Branch: IN-$BRANCH_TASK_ID"
+            exit 1
+          fi
+          echo "[SUCCESS] PR title follows the convention and matches branch task ID (IN-$TITLE_TASK_ID)!"
+
+  # ---- Validate: Swift Package (same as GitLab swift-package-validate) ----
+  swift-package-validate:
+    name: Swift Package validate
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build
+            DerivedData
+          key: swift-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }}
+          restore-keys: swift-${{ runner.os }}-
+      - name: Xcode setup
+        run: |
+          xcode-select -p
+          swift --version
+          xcodebuild -version
+      - name: Resolve & validate
+        run: |
+          swift package resolve
+          swift package dump-package
+          swift build --build-tests
+
+  # ---- Code quality (same as GitLab: SwiftLint + swift-format) ----
+  code-quality:
+    name: Code quality
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode setup
+        run: |
+          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+          swift --version
+      - name: SwiftLint
+        run: |
+          if command -v swiftlint >/dev/null 2>&1; then
+            swiftlint --strict
+          else
+            brew install swiftlint
+            swiftlint --strict
+          fi
+      - name: swift-format
+        run: |
+          if command -v swift-format >/dev/null 2>&1; then
+            swift-format lint --recursive Sources/ Tests/ || true
+          else
+            echo "swift-format not available, skipping"
+          fi
+    continue-on-error: true
+
+  # ---- Test: xcodebuild test (same as GitLab .test_template) ----
+  test-ios:
+    name: Test iOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build
+            DerivedData
+          key: swift-${{ runner.os }}-${{ hashFiles('Package.swift') }}
+          restore-keys: swift-${{ runner.os }}-
+      - name: Xcode setup
+        run: |
+          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+          xcode-select -p
+          swift --version
+      - name: Resolve simulator and run tests
+        run: |
+          PLATFORM="iOS Simulator"
+          DEVICE_PATTERN="iPhone"
+          SIM_LINE=$(xcrun simctl list devices available | grep -i "$DEVICE_PATTERN" | head -1 || true)
+          if [ -n "$SIM_LINE" ]; then
+            SIM_ID=$(echo "$SIM_LINE" | sed -n 's/.*(\([A-F0-9-]*\)).*/\1/p')
+            [ -n "$SIM_ID" ] && TEST_DESTINATION="platform=$PLATFORM,id=$SIM_ID" || TEST_DESTINATION="platform=$PLATFORM,name=iPhone"
+          else
+            TEST_DESTINATION="platform=$PLATFORM,name=iPhone"
+          fi
+          echo "Destination: $TEST_DESTINATION"
+          xcodebuild test \
+            -project SwiftKT.xcodeproj \
+            -scheme SwiftKT \
+            -destination "$TEST_DESTINATION" \
+            -configuration Debug \
+            -derivedDataPath DerivedData \
+            -resultBundlePath test-results-ios.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-ios
+          path: test-results-ios.xcresult
+
+  test-macos:
+    name: Test macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: swift-${{ runner.os }}-${{ hashFiles('Package.swift') }}
+          restore-keys: swift-${{ runner.os }}-
+      - name: Xcode setup
+        run: |
+          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+          swift --version
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -project SwiftKT.xcodeproj \
+            -scheme SwiftKT \
+            -destination "platform=macOS,arch=x86_64" \
+            -configuration Debug \
+            -derivedDataPath DerivedData \
+            -resultBundlePath test-results-macos.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-macos
+          path: test-results-macos.xcresult
+
+  # ---- Security (same as GitLab security-audit) ----
+  security-audit:
+    name: Security audit
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for potential secrets
+        run: |
+          if grep -r -i -E "(password|secret|key|token|api_key)" Sources/ Tests/ --include="*.swift" 2>/dev/null | grep -v "// " | head -10; then
+            echo "⚠️ Potential secrets found in code. Please review."
+          fi
+    continue-on-error: true
+
+  # ---- Build performance (same as GitLab: xcodebuild clean build) ----
+  build-performance:
+    name: Build performance
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode setup
+        run: |
+          export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+      - name: Build timing
+        run: |
+          echo "Testing build performance..."
+          time xcodebuild clean build \
+            -project SwiftKT.xcodeproj \
+            -scheme SwiftKT \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -configuration Release \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet
+    continue-on-error: true
