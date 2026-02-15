@@ -127,12 +127,12 @@ extension KotlinStringProxy {
 
     /// Removes leading whitespace (Kotlin: `trimStart()`).
     public func trimStart() -> String {
-        String(base.drop(while: { $0.isWhitespace }))
+        String(base.drop { $0.isWhitespace })
     }
 
     /// Removes trailing whitespace (Kotlin: `trimEnd()`).
     public func trimEnd() -> String {
-        String(base.reversed().drop(while: { $0.isWhitespace }).reversed())
+        String(base.reversed().drop { $0.isWhitespace }.reversed())
     }
 
     /// Trims indentation: detects common minimal indent and removes it from every line (Kotlin: `trimIndent()`).
@@ -143,7 +143,7 @@ extension KotlinStringProxy {
             return base.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         let minIndent = nonEmpty.map { line -> Int in
-            line.prefix(while: { $0 == " " || $0 == "\t" }).count
+            line.prefix { $0 == " " || $0 == "\t" }.count
         }.min() ?? 0
         return lines.map { line in
             if line.count >= minIndent {
@@ -156,7 +156,7 @@ extension KotlinStringProxy {
     /// Trims leading margin: removes leading whitespace from each line up to and including the first occurrence of marginPrefix (Kotlin: `trimMargin(marginPrefix)`).
     public func trimMargin(marginPrefix: String = "|") -> String {
         base.split(separator: "\n", omittingEmptySubsequences: false).map { line in
-            let trimmed = line.drop(while: { $0.isWhitespace })
+            let trimmed = line.drop { $0.isWhitespace }
             if trimmed.hasPrefix(marginPrefix) {
                 return String(trimmed.dropFirst(marginPrefix.count))
             }
