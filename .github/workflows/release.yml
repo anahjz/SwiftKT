@@ -153,8 +153,9 @@ jobs:
           VERSION="${TAG#v}"
           [ -z "$VERSION" ] && VERSION="0.0.0"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          cp LICENSE build/
           cd build
-          zip -r "SwiftKT-${VERSION}.xcframework.zip" SwiftKT.xcframework
+          zip -r "SwiftKT-${VERSION}.xcframework.zip" SwiftKT.xcframework LICENSE
           shasum -a 256 "SwiftKT-${VERSION}.xcframework.zip" > "SwiftKT-${VERSION}.xcframework.zip.sha256"
           CHECKSUM=$(cut -d' ' -f1 "SwiftKT-${VERSION}.xcframework.zip.sha256")
           echo "CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
@@ -201,7 +202,7 @@ jobs:
             spec.summary       = 'SwiftKT - Binary Distribution'
             spec.description   = 'Pre-compiled XCFramework for SwiftKT'
             spec.homepage      = '${REPO}'
-            spec.license       = { :type => 'MIT' }
+            spec.license       = { :type => 'MIT', :file => 'LICENSE' }
             spec.author        = { 'anahjz' => 'https://github.com/anahjz' }
             spec.source        = {
               :http => '${REPO}/releases/download/${TAG}/SwiftKT-${VERSION}.xcframework.zip',
@@ -209,8 +210,6 @@ jobs:
             }
             spec.ios.deployment_target = '16.0'
             spec.osx.deployment_target = '13.0'
-            spec.tvos.deployment_target = '16.0'
-            spec.watchos.deployment_target = '9.0'
             spec.vendored_frameworks = 'SwiftKT.xcframework'
             spec.swift_version = '5.9'
           end
