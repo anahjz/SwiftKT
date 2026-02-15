@@ -246,16 +246,11 @@ jobs:
           SHA256: CHECKSUM_PLACEHOLDER
           INNER
           sed -i '' "s|REPO_PLACEHOLDER|${REPO}|g; s|VERSION_PLACEHOLDER|${VERSION}|g; s|CHECKSUM_PLACEHOLDER|${CHECKSUM}|g" build/INSTALLATION.md
-      - uses: actions/upload-artifact@v4
+      - name: Upload XCFramework artifact (entire build/ so zip is included)
+        uses: actions/upload-artifact@v4
         with:
           name: xcframework
-          path: |
-            build/SwiftKT.xcframework
-            build/SwiftKT-*.xcframework.zip
-            build/SwiftKT-*.xcframework.zip.sha256
-            build/Package-Binary.swift
-            build/SwiftKT-Binary.podspec
-            build/INSTALLATION.md
+          path: build/
 
   # ---- Create GitHub Release (same as GitLab create-release) ----
   create-release:
@@ -285,8 +280,11 @@ jobs:
           VERSION="${{ steps.ver.outputs.version }}"
           ZIP="build/SwiftKT-${VERSION}.xcframework.zip"
           if [ ! -f "$ZIP" ]; then
-            echo "Missing $ZIP - listing build/:"
-            ls -la build/ || true
+            echo "Missing $ZIP"
+            echo "Listing workspace:"
+            ls -la
+            echo "Listing build/ (if present):"
+            ls -la build/ 2>/dev/null || true
             exit 1
           fi
           echo "Found $ZIP ($(du -h "$ZIP" | cut -f1))"
