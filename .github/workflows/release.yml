@@ -99,33 +99,41 @@ jobs:
     needs: [build-ios-device, build-ios-simulator, build-macos]
     steps:
       - uses: actions/checkout@v4
-      - name: Download archives
+      - name: Download archive (iOS)
         uses: actions/download-artifact@v4
         with:
-          path: build
-          merge-multiple: true
+          name: archive-ios
+          path: build/ios
+      - name: Download archive (iOS Simulator)
+        uses: actions/download-artifact@v4
+        with:
+          name: archive-ios-simulator
+          path: build/ios-simulator
+      - name: Download archive (macOS)
+        uses: actions/download-artifact@v4
+        with:
+          name: archive-macos
+          path: build/macos
       - name: Locate frameworks
         run: |
           set -e
-          # merge-multiple: each artifact is in build/archive-ios/, build/archive-ios-simulator/, build/archive-macos/
-          # Upload was path "build/SwiftKT-*.xcarchive" so artifact content = that folder
-          # After download to "build", layout can be build/archive-ios/SwiftKT-iphoneos.xcarchive/... or build/SwiftKT-iphoneos.xcarchive/...
+          # Each artifact (xcarchive) extracts to build/<platform>/; content is SwiftKT-*.xcarchive/Products/... or directly Products/...
           find_fw() {
             for c in "$@"; do [ -d "$c" ] && echo "$c" && return 0; done
             return 1
           }
           IOS_FW=$(find_fw \
-            "build/archive-ios/SwiftKT-iphoneos.xcarchive/Products/Library/Frameworks/SwiftKT.framework" \
-            "build/archive-ios/Products/Library/Frameworks/SwiftKT.framework" \
-            "build/SwiftKT-iphoneos.xcarchive/Products/Library/Frameworks/SwiftKT.framework") || { echo "iOS framework not found"; find build -name "SwiftKT.framework" -type d; exit 1; }
+            "build/ios/SwiftKT-iphoneos.xcarchive/Products/Library/Frameworks/SwiftKT.framework" \
+            "build/ios/Products/Library/Frameworks/SwiftKT.framework" \
+            "build/ios/build/SwiftKT-iphoneos.xcarchive/Products/Library/Frameworks/SwiftKT.framework") || { echo "iOS framework not found"; find build/ios -name "*.framework" -type d; exit 1; }
           IOS_SIM_FW=$(find_fw \
-            "build/archive-ios-simulator/SwiftKT-iphonesimulator.xcarchive/Products/Library/Frameworks/SwiftKT.framework" \
-            "build/archive-ios-simulator/Products/Library/Frameworks/SwiftKT.framework" \
-            "build/SwiftKT-iphonesimulator.xcarchive/Products/Library/Frameworks/SwiftKT.framework") || { echo "iOS Sim framework not found"; exit 1; }
+            "build/ios-simulator/SwiftKT-iphonesimulator.xcarchive/Products/Library/Frameworks/SwiftKT.framework" \
+            "build/ios-simulator/Products/Library/Frameworks/SwiftKT.framework" \
+            "build/ios-simulator/build/SwiftKT-iphonesimulator.xcarchive/Products/Library/Frameworks/SwiftKT.framework") || { echo "iOS Sim framework not found"; find build/ios-simulator -name "*.framework" -type d; exit 1; }
           MAC_FW=$(find_fw \
-            "build/archive-macos/SwiftKT-macosx.xcarchive/Products/Library/Frameworks/SwiftKT.framework" \
-            "build/archive-macos/Products/Library/Frameworks/SwiftKT.framework" \
-            "build/SwiftKT-macosx.xcarchive/Products/Library/Frameworks/SwiftKT.framework") || { echo "macOS framework not found"; exit 1; }
+            "build/macos/SwiftKT-macosx.xcarchive/Products/Library/Frameworks/SwiftKT.framework" \
+            "build/macos/Products/Library/Frameworks/SwiftKT.framework" \
+            "build/macos/build/SwiftKT-macosx.xcarchive/Products/Library/Frameworks/SwiftKT.framework") || { echo "macOS framework not found"; find build/macos -name "*.framework" -type d; exit 1; }
           echo "IOS_FW=$IOS_FW" >> $GITHUB_ENV
           echo "IOS_SIM_FW=$IOS_SIM_FW" >> $GITHUB_ENV
           echo "MAC_FW=$MAC_FW" >> $GITHUB_ENV
