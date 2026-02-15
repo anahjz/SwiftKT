@@ -247,7 +247,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: xcframework
-          path: build
+          path: .
       - name: Get version
         id: ver
         run: |
@@ -256,6 +256,16 @@ jobs:
           [ -z "$VERSION" ] && VERSION="0.0.0"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Verify XCFramework assets exist
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          ZIP="build/SwiftKT-${VERSION}.xcframework.zip"
+          if [ ! -f "$ZIP" ]; then
+            echo "Missing $ZIP - listing build/:"
+            ls -la build/ || true
+            exit 1
+          fi
+          echo "Found $ZIP ($(du -h "$ZIP" | cut -f1))"
       - name: Generate release notes (same structure as GitLab)
         run: |
           TAG="${{ steps.ver.outputs.tag }}"
@@ -289,8 +299,8 @@ jobs:
           draft: false
           generate_release_notes: true
           files: |
-            build/SwiftKT-*.xcframework.zip
-            build/SwiftKT-*.xcframework.zip.sha256
+            build/SwiftKT-${{ steps.ver.outputs.version }}.xcframework.zip
+            build/SwiftKT-${{ steps.ver.outputs.version }}.xcframework.zip.sha256
             build/Package-Binary.swift
             build/SwiftKT-Binary.podspec
             build/INSTALLATION.md
