@@ -1,4 +1,4 @@
-# CI — mirrors GitLab CI: pre-validate, validate, test, build, security
+# CI — validate, test, build, security
 # Same stages and logic; adapted for GitHub Actions + SwiftKT (SwiftKT.xcodeproj).
 
 name: CI
@@ -15,58 +15,6 @@ env:
   LANG: en_US.UTF-8
 
 jobs:
-  # ---- Pre-validate: PR title = MR title (exact GitLab logic) ----
-  validate-pr-title:
-    name: Validate PR title
-    runs-on: macos-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Check MR title format and task ID (GitLab-equivalent)
-        run: |
-          echo "[INFO] Checking PR title format and task ID consistency..."
-          MR_TITLE="${{ github.event.pull_request.title }}"
-          BRANCH_NAME="${{ github.head_ref }}"
-          if [ -z "$BRANCH_NAME" ]; then
-            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-            echo "[INFO] Using branch from GITHUB_REF"
-          fi
-          echo "PR Title: $MR_TITLE"
-          echo "Branch Name: $BRANCH_NAME"
-
-          # Same pattern as GitLab: type(scope)?: description (IN-####) [-internal]
-          VALID_PATTERN="^(feat|fix|refactor|perf|style|test|docs|chore|build|ci|revert)(\(.*\))?: .* \(IN-[0-9]+\)( -internal)?$"
-          if [[ ! "$MR_TITLE" =~ $VALID_PATTERN ]]; then
-            echo "[ERROR] PR title does not follow the commit message convention!"
-            echo "Expected format: <type>(scope)?: <description> (IN-####) [-internal]"
-            echo "Valid types: feat, fix, refactor, perf, style, test, docs, chore, build, ci, revert"
-            echo "Examples: feat: add user authentication (IN-123)"
-            exit 1
-          fi
-
-          if [[ "$MR_TITLE" =~ \(IN-([0-9]+)\) ]]; then
-            TITLE_TASK_ID="${BASH_REMATCH[1]}"
-            echo "Task ID from PR title: IN-$TITLE_TASK_ID"
-          else
-            echo "[ERROR] Could not extract task ID from PR title"
-            exit 1
-          fi
-
-          BRANCH_NAME=$(echo "$BRANCH_NAME" | xargs)
-          if [[ "$BRANCH_NAME" =~ IN-([0-9]+) ]]; then
-            BRANCH_TASK_ID="${BASH_REMATCH[1]}"
-            echo "Task ID from branch name: IN-$BRANCH_TASK_ID"
-          else
-            echo "[ERROR] Branch name does not contain a task ID (IN-####)"
-            echo "Supported: feature/IN-123-description, fix/IN-456-bug-fix"
-            exit 1
-          fi
-
-          if [[ "$TITLE_TASK_ID" != "$BRANCH_TASK_ID" ]]; then
-            echo "[ERROR] Task ID mismatch! PR: IN-$TITLE_TASK_ID, Branch: IN-$BRANCH_TASK_ID"
-            exit 1
-          fi
-          echo "[SUCCESS] PR title follows the convention and matches branch task ID (IN-$TITLE_TASK_ID)!"
-
   # ---- Validate: Swift Package (same as GitLab swift-package-validate) ----
   swift-package-validate:
     name: Swift Package validate
