@@ -64,10 +64,6 @@ Then add `SwiftKT` to your target dependencies.
 pod 'SwiftKT-Binary', '~> 1.0'
 ```
 
-### XCFramework
-
-From each [GitHub Release](https://github.com/anahjz/SwiftKT/releases), download `SwiftKT-<version>.xcframework.zip`, extract it, and add `SwiftKT.xcframework` to your Xcode project under **Frameworks, Libraries, and Embedded Content**.
-
 ## API surface (first milestone)
 
 - **Properties:** `length`, `indices`, `lastIndex`
