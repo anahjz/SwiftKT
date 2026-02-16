@@ -81,16 +81,3 @@ From each [GitHub Release](https://github.com/anahjz/SwiftKT/releases), download
 - **Char access:** `get(index:)`, `first()`, `last()`, `firstOrNull()`, `lastOrNull()`
 
 See [Documentation/BehavioralDifferences.md](Documentation/BehavioralDifferences.md) for how SwiftKT differs from Kotlin (Unicode, indexing, regex, locale).
-
-## Releasing (XCFramework + CocoaPods)
-
-1. Push a version tag: `git tag v1.0.0 && git push origin v1.0.0`
-2. The [Release workflow](.github/workflows/release.yml) will:
-   - Build an XCFramework (iOS, iOS Simulator, macOS) and attach it to the GitHub Release
-   - Publish **SwiftKT-Binary** to CocoaPods if `COCOAPODS_TRUNK_TOKEN` is set in repo **Settings → Secrets and variables → Actions**
-
-To get a CocoaPods trunk token: run `pod trunk register your@email.com 'Your Name'` once, then add the token as the `COCOAPODS_TRUNK_TOKEN` secret.
-
-## License
-
-MIT. See [LICENSE](LICENSE).
