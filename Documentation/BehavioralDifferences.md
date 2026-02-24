@@ -313,4 +313,65 @@ These differences are the main ones to keep in mind when porting Kotlin String a
 - **Kotlin:** `firstOrNull()`, `lastOrNull()`, `singleOrNull()`, `maxOrNull()`, `minOrNull()`, `maxByOrNull`, `minByOrNull` return nullable types that are `null` when no element exists.
 - **SwiftKT:** All of these return `Optional` (`Element?`) in the same situations. No force unwrap is used; callers must handle the optional results explicitly.
 
+---
+
+## 10. Maps
+
+### 10.1 Dictionary vs Map
+
+- **Kotlin:** `Map<K, V>` is an interface, commonly backed by `LinkedHashMap` on the JVM, which preserves insertion order.
+- **Swift:** `Dictionary<Key, Value>` is a concrete value type. Since Swift 5, the standard library preserves insertion order for keys, but this is a library detail rather than a hard language guarantee.
+
+**SwiftKT behavior:**
+
+- `KotlinMapProxy<Key, Value>` wraps a Swift `[Key: Value]` and exposes Kotlin-style `Map` APIs (e.g. `getOrDefault`, `getOrElse`, `containsKey`, `containsValue`, `filterKeys`, `filterValues`, `mapValues`, `mapKeys`).
+- Ordering when iterating a dictionary created by these operations matches Swift’s dictionary insertion order, which in practice aligns with Kotlin’s `LinkedHashMap` behavior.
+
+### 10.2 getOrDefault / getOrElse
+
+- **Kotlin:**
+  - `getOrDefault(key, defaultValue)`:
+    - Returns `map[key]` if present, otherwise `defaultValue`.
+  - `getOrElse(key) { default }`:
+    - Returns `map[key]` if present.
+    - Otherwise, evaluates the lambda and returns its result (lazy).
+- **SwiftKT:**
+  - `getOrDefault(_ key: Key, defaultValue: Value) -> Value`:
+    - Uses `base[key]` and returns `defaultValue` when `nil`.
+    - Works correctly even when `Value` itself is optional, because `base[key]` is `Value?` and `.some(nil)` is distinguishable from `nil`.
+  - `getOrElse(_ key: Key, defaultValue: () -> Value) -> Value`:
+    - Evaluates `defaultValue` **only** when `base[key]` is `nil`.
+
+### 10.3 containsKey / containsValue
+
+- **Kotlin:**
+  - `containsKey(key)` uses key lookup.
+  - `containsValue(value)` scans all values with equality checks.
+- **SwiftKT:**
+  - `containsKey(_ key: Key) -> Bool`:
+    - Implemented via `base[key] != nil`, which is true even when `Value` is an optional holding `nil`. This matches Kotlin’s semantics that “key is present” is independent of stored value.
+  - `containsValue(_ value: Value) -> Bool where Value: Equatable`:
+    - Iterates `base.values` and compares each value via `==`.
+    - Only available when `Value` conforms to `Equatable`; this is stricter than Kotlin, which can rely on platform equality for arbitrary types.
+
+### 10.4 Filtering and transformations
+
+- **Kotlin:**
+  - `filterKeys`, `filterValues` produce a `Map` with the same value or key type respectively.
+  - `mapValues` keeps keys and transforms values.
+  - `mapKeys` transforms keys and keeps values; when key collisions occur, the entry with the last key wins.
+- **SwiftKT:**
+  - `filterKeys(_ predicate: (Key) -> Bool) -> [Key: Value]`
+  - `filterValues(_ predicate: (Value) -> Bool) -> [Key: Value]`
+  - `mapValues(_ transform: (Key, Value) -> R) -> [Key: R]`
+  - `mapKeys(_ transform: (Key, Value) -> R) -> [R: Value] where R: Hashable`
+    - On key collisions in `mapKeys`, the value from the **last** element in the original dictionary iteration overwrites previous ones, matching Kotlin’s “last write wins” semantics.
+
+### 10.5 Optional values
+
+- **Kotlin:** `Map<K, V?>` is common; keys can exist with a `null` value.
+- **SwiftKT:** Dictionaries may store `Optional` values (`[Key: Value?]`):
+  - `getOrDefault` respects existing keys whose value is `nil` (returns `.some(nil)`), and falls back only when the key is absent.
+  - `containsKey` uses `base[key] != nil` so keys with `nil` values are still considered present, mirroring Kotlin.
+
 

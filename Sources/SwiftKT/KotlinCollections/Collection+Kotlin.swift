@@ -38,3 +38,20 @@ extension MutableCollection {
     }
 }
 
+// MARK: - Dictionary extension (Map proxy)
+
+extension Dictionary {
+
+    /// Provides the Kotlin-style `Map` API surface for Swift dictionaries.
+    ///
+    /// Example:
+    /// ```swift
+    /// let counts = ["a": 1, "b": 2]
+    /// counts.kotlinMap.getOrDefault("c", defaultValue: 0) // 0
+    /// ```
+    public var kotlinMap: KotlinMapProxy<Key, Value> {
+        KotlinMapProxy(self)
+    }
+}
+
+
