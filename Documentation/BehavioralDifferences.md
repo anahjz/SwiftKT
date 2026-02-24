@@ -234,3 +234,83 @@ This avoids traps while matching Kotlin’s documented behavior.
 
 These differences are the main ones to keep in mind when porting Kotlin String and Number code to Swift using SwiftKT.
 
+---
+
+## 9. Collections
+
+### 9.1 Indexing and iteration
+
+- **Kotlin:** `List` and array types typically support O(1) integer indexing; many collection APIs are defined on `Iterable` but specialized implementations for lists use random access internally.
+- **Swift:** `Collection` indices are abstract; integer indexing is not guaranteed and can be O(n) unless the type is `RandomAccessCollection`.
+
+**SwiftKT behavior:**
+
+- All index-based Kotlin-style APIs (`getOrNull(index)`, `mapIndexed`, `filterIndexed`, `forEachIndexed`) use linear iteration from `startIndex`, counting an `Int` offset.
+- This matches the complexity of Kotlin’s `Iterable` implementations and is correct for all `Collection` types at the cost of O(n) index lookups.
+
+### 9.2 Exceptions vs thrown errors
+
+- **Kotlin:** Throws:
+  - `NoSuchElementException` for `first()`, `last()`, `single()` on empty collections.
+  - `IllegalArgumentException` for invalid arguments (e.g. `chunked(0)`, `windowed(size=0)`).
+  - `IndexOutOfBoundsException` for invalid indices.
+- **Swift:** Collection APIs typically use preconditions (`fatalError` / `preconditionFailure`) rather than typed exceptions.
+
+**SwiftKT behavior:**
+
+- `first()`, `last()`, `single()` and their predicate variants:
+  - Throw `KotlinCollectionError.noSuchElement` when no matching element exists.
+- `single()` on collections with more than one element:
+  - Throws `KotlinCollectionError.illegalState("Expected single element but was multiple")`.
+- Programmer errors such as:
+  - `chunked(size: 0)`
+  - `windowed(size: 0, step: 0)`
+  - `windowed(step: 0, ...)`
+  use `kotlinIllegalArgument`, which calls `preconditionFailure` with an explanatory message, mirroring Kotlin’s `IllegalArgumentException`.
+
+### 9.3 Ordering and dictionaries
+
+- **Kotlin:** `groupBy` and `associate*` functions return `Map`. On the JVM, `LinkedHashMap` is used so iteration order preserves insertion order for keys.
+- **Swift:** `Dictionary` preserves insertion order for keys in current standard library implementations, but this is not a guaranteed part of the ABI across all platforms and versions.
+
+**SwiftKT behavior:**
+
+- `associate`, `associateBy`, `associateWith`, and `groupBy` all return native `Dictionary` values.
+- In practice, insertion order is preserved when iterating these dictionaries, matching Kotlin’s observable behavior, but this is not formally guaranteed by the Swift language.
+- When multiple elements map to the same key, the **last** element wins (overwrites previous), matching Kotlin.
+
+### 9.4 Windowing and chunking
+
+- **Kotlin:** `chunked` and `windowed` on `Iterable` allocate intermediate lists but are optimized for lists internally.
+- **SwiftKT:** Both `chunked` and `windowed` operate on a single `Array` copy of the base collection:
+  - `chunked(size)`:
+    - Size must be > 0 (otherwise precondition failure via `kotlinIllegalArgument`).
+    - Returns trailing partial chunk, just like Kotlin.
+  - `windowed(size, step, partialWindows)`:
+    - `size` and `step` must be > 0 (otherwise precondition failure).
+    - `partialWindows` determines whether trailing partial windows are included.
+  - Transform variants `chunked(size, transform)` and `windowed(..., transform)` simply map over the produced slices.
+
+### 9.5 Distinct and hashing
+
+- **Kotlin:** `distinct()` and `distinctBy()` rely on hash sets and equality; ordering of first occurrences is preserved.
+- **SwiftKT:** Uses `Set` for `distinct()` and `distinctBy(selector)`:
+  - Preserves the **first** occurrence of each element or key.
+  - Requires `Hashable` keys for `distinctBy` to keep complexity near O(n).
+
+### 9.6 Sum aggregation
+
+- **Kotlin:** `sumOf` is generic over numeric types and uses platform-specific widening rules.
+- **SwiftKT:** Implements a small, explicit overload set:
+  - `sumOf(selector: (Element) -> Int) -> Int`
+  - `sumOf(selector: (Element) -> Int64) -> Int64`
+  - `sumOf(selector: (Element) -> Double) -> Double`
+  - `sumOf(selector: (Element) -> Float) -> Float`
+- Integer variants use wrapping addition (`&+`) to mirror Kotlin/JVM overflow semantics; floating-point variants use normal `+` and follow IEEE 754 rules.
+
+### 9.7 Nullability and Optionals
+
+- **Kotlin:** `firstOrNull()`, `lastOrNull()`, `singleOrNull()`, `maxOrNull()`, `minOrNull()`, `maxByOrNull`, `minByOrNull` return nullable types that are `null` when no element exists.
+- **SwiftKT:** All of these return `Optional` (`Element?`) in the same situations. No force unwrap is used; callers must handle the optional results explicitly.
+
+
