@@ -7,12 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B01B963D2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B963C2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift */; };
 		B01B96352F4D865300A27D04 /* KotlinFloatingPointProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96312F4D865300A27D04 /* KotlinFloatingPointProxy.swift */; };
 		B01B96362F4D865300A27D04 /* KotlinNumberErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96322F4D865300A27D04 /* KotlinNumberErrors.swift */; };
 		B01B96372F4D865300A27D04 /* KotlinNumberProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96332F4D865300A27D04 /* KotlinNumberProxy.swift */; };
 		B01B96382F4D865300A27D04 /* KotlinNumberRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96342F4D865300A27D04 /* KotlinNumberRange.swift */; };
 		B01B963A2F4D866300A27D04 /* KotlinNumberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96392F4D866300A27D04 /* KotlinNumberTests.swift */; };
+		B01B963D2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B963C2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift */; };
+		B01B96402F4DB51E00A27D04 /* KotlinMutableCollectionProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B963E2F4DB51E00A27D04 /* KotlinMutableCollectionProxy.swift */; };
+		B01B96412F4DB51E00A27D04 /* KotlinCollectionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B963C2F4DB51E00A27D04 /* KotlinCollectionError.swift */; };
+		B01B96422F4DB51E00A27D04 /* KotlinCollectionProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B963D2F4DB51E00A27D04 /* KotlinCollectionProxy.swift */; };
+		B01B96432F4DB51E00A27D04 /* Collection+Kotlin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B963B2F4DB51E00A27D04 /* Collection+Kotlin.swift */; };
+		B01B96472F4DB53600A27D04 /* IndexingHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96452F4DB53600A27D04 /* IndexingHelpers.swift */; };
+		B01B96482F4DB53600A27D04 /* ExceptionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96442F4DB53600A27D04 /* ExceptionHelpers.swift */; };
+		B01B964D2F4DB55100A27D04 /* WindowingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B964C2F4DB55100A27D04 /* WindowingTests.swift */; };
+		B01B964E2F4DB55100A27D04 /* AggregationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B96492F4DB55100A27D04 /* AggregationTests.swift */; };
+		B01B964F2F4DB55100A27D04 /* GroupingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B964A2F4DB55100A27D04 /* GroupingTests.swift */; };
+		B01B96502F4DB55100A27D04 /* KotlinCollectionProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01B964B2F4DB55100A27D04 /* KotlinCollectionProxyTests.swift */; };
 		B0385B0B2F41DDF000289624 /* SwiftKT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0385AFF2F41DDEF00289624 /* SwiftKT.framework */; };
 		B0385B2B2F41E20100289624 /* KotlinStringPadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0385B222F41E20100289624 /* KotlinStringPadding.swift */; };
 		B0385B2C2F41E20100289624 /* KotlinStringSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0385B262F41E20100289624 /* KotlinStringSearch.swift */; };
@@ -42,8 +52,18 @@
 		B01B96322F4D865300A27D04 /* KotlinNumberErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinNumberErrors.swift; sourceTree = "<group>"; };
 		B01B96332F4D865300A27D04 /* KotlinNumberProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinNumberProxy.swift; sourceTree = "<group>"; };
 		B01B96342F4D865300A27D04 /* KotlinNumberRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinNumberRange.swift; sourceTree = "<group>"; };
-		B01B963C2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinStringNumberParsing.swift; sourceTree = "<group>"; };
 		B01B96392F4D866300A27D04 /* KotlinNumberTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinNumberTests.swift; sourceTree = "<group>"; };
+		B01B963B2F4DB51E00A27D04 /* Collection+Kotlin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Kotlin.swift"; sourceTree = "<group>"; };
+		B01B963C2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinStringNumberParsing.swift; sourceTree = "<group>"; };
+		B01B963C2F4DB51E00A27D04 /* KotlinCollectionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinCollectionError.swift; sourceTree = "<group>"; };
+		B01B963D2F4DB51E00A27D04 /* KotlinCollectionProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinCollectionProxy.swift; sourceTree = "<group>"; };
+		B01B963E2F4DB51E00A27D04 /* KotlinMutableCollectionProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinMutableCollectionProxy.swift; sourceTree = "<group>"; };
+		B01B96442F4DB53600A27D04 /* ExceptionHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHelpers.swift; sourceTree = "<group>"; };
+		B01B96452F4DB53600A27D04 /* IndexingHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingHelpers.swift; sourceTree = "<group>"; };
+		B01B96492F4DB55100A27D04 /* AggregationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AggregationTests.swift; sourceTree = "<group>"; };
+		B01B964A2F4DB55100A27D04 /* GroupingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupingTests.swift; sourceTree = "<group>"; };
+		B01B964B2F4DB55100A27D04 /* KotlinCollectionProxyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinCollectionProxyTests.swift; sourceTree = "<group>"; };
+		B01B964C2F4DB55100A27D04 /* WindowingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowingTests.swift; sourceTree = "<group>"; };
 		B0385AFF2F41DDEF00289624 /* SwiftKT.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftKT.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0385B0A2F41DDF000289624 /* SwiftKTTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftKTTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0385B1F2F41E20100289624 /* KotlinStringCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KotlinStringCollection.swift; sourceTree = "<group>"; };
@@ -78,6 +98,55 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B01B963F2F4DB51E00A27D04 /* KotlinCollections */ = {
+			isa = PBXGroup;
+			children = (
+				B01B963B2F4DB51E00A27D04 /* Collection+Kotlin.swift */,
+				B01B963C2F4DB51E00A27D04 /* KotlinCollectionError.swift */,
+				B01B963D2F4DB51E00A27D04 /* KotlinCollectionProxy.swift */,
+				B01B963E2F4DB51E00A27D04 /* KotlinMutableCollectionProxy.swift */,
+			);
+			path = KotlinCollections;
+			sourceTree = "<group>";
+		};
+		B01B96462F4DB53600A27D04 /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				B01B96442F4DB53600A27D04 /* ExceptionHelpers.swift */,
+				B01B96452F4DB53600A27D04 /* IndexingHelpers.swift */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		B01B96512F4DB8C500A27D04 /* KotlinNumbers */ = {
+			isa = PBXGroup;
+			children = (
+				B01B96322F4D865300A27D04 /* KotlinNumberErrors.swift */,
+				B01B96342F4D865300A27D04 /* KotlinNumberRange.swift */,
+				B01B96332F4D865300A27D04 /* KotlinNumberProxy.swift */,
+				B01B963C2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift */,
+				B01B96312F4D865300A27D04 /* KotlinFloatingPointProxy.swift */,
+			);
+			path = KotlinNumbers;
+			sourceTree = "<group>";
+		};
+		B01B96522F4DB97000A27D04 /* KotlinStrings */ = {
+			isa = PBXGroup;
+			children = (
+				B0385B1F2F41E20100289624 /* KotlinStringCollection.swift */,
+				B0385B202F41E20100289624 /* KotlinStringErrors.swift */,
+				B0385B212F41E20100289624 /* KotlinStringIndex.swift */,
+				B0385B222F41E20100289624 /* KotlinStringPadding.swift */,
+				B0385B232F41E20100289624 /* KotlinStringPredicates.swift */,
+				B0385B242F41E20100289624 /* KotlinStringProxy.swift */,
+				B0385B252F41E20100289624 /* KotlinStringRegex.swift */,
+				B0385B262F41E20100289624 /* KotlinStringSearch.swift */,
+				B0385B272F41E20100289624 /* KotlinStringSplit.swift */,
+				B0385B282F41E20100289624 /* KotlinStringTransform.swift */,
+			);
+			path = KotlinStrings;
+			sourceTree = "<group>";
+		};
 		B0385AF52F41DDEF00289624 = {
 			isa = PBXGroup;
 			children = (
@@ -99,21 +168,10 @@
 		B0385B292F41E20100289624 /* SwiftKT */ = {
 			isa = PBXGroup;
 			children = (
-				B01B963C2F4D86AA00A27D04 /* KotlinStringNumberParsing.swift */,
-				B01B96312F4D865300A27D04 /* KotlinFloatingPointProxy.swift */,
-				B01B96322F4D865300A27D04 /* KotlinNumberErrors.swift */,
-				B01B96332F4D865300A27D04 /* KotlinNumberProxy.swift */,
-				B01B96342F4D865300A27D04 /* KotlinNumberRange.swift */,
-				B0385B1F2F41E20100289624 /* KotlinStringCollection.swift */,
-				B0385B202F41E20100289624 /* KotlinStringErrors.swift */,
-				B0385B212F41E20100289624 /* KotlinStringIndex.swift */,
-				B0385B222F41E20100289624 /* KotlinStringPadding.swift */,
-				B0385B232F41E20100289624 /* KotlinStringPredicates.swift */,
-				B0385B242F41E20100289624 /* KotlinStringProxy.swift */,
-				B0385B252F41E20100289624 /* KotlinStringRegex.swift */,
-				B0385B262F41E20100289624 /* KotlinStringSearch.swift */,
-				B0385B272F41E20100289624 /* KotlinStringSplit.swift */,
-				B0385B282F41E20100289624 /* KotlinStringTransform.swift */,
+				B01B96522F4DB97000A27D04 /* KotlinStrings */,
+				B01B96512F4DB8C500A27D04 /* KotlinNumbers */,
+				B01B96462F4DB53600A27D04 /* Internal */,
+				B01B963F2F4DB51E00A27D04 /* KotlinCollections */,
 			);
 			path = SwiftKT;
 			sourceTree = "<group>";
@@ -129,6 +187,10 @@
 		B0385B3A2F41E2AA00289624 /* SwiftKTTests */ = {
 			isa = PBXGroup;
 			children = (
+				B01B96492F4DB55100A27D04 /* AggregationTests.swift */,
+				B01B964A2F4DB55100A27D04 /* GroupingTests.swift */,
+				B01B964B2F4DB55100A27D04 /* KotlinCollectionProxyTests.swift */,
+				B01B964C2F4DB55100A27D04 /* WindowingTests.swift */,
 				B01B96392F4D866300A27D04 /* KotlinNumberTests.swift */,
 				B0385B392F41E2AA00289624 /* SwiftKTTests.swift */,
 			);
@@ -260,12 +322,18 @@
 				B0385B2B2F41E20100289624 /* KotlinStringPadding.swift in Sources */,
 				B0385B2C2F41E20100289624 /* KotlinStringSearch.swift in Sources */,
 				B0385B2D2F41E20100289624 /* KotlinStringProxy.swift in Sources */,
+				B01B96472F4DB53600A27D04 /* IndexingHelpers.swift in Sources */,
+				B01B96482F4DB53600A27D04 /* ExceptionHelpers.swift in Sources */,
 				B0385B2E2F41E20100289624 /* KotlinStringErrors.swift in Sources */,
 				B0385B2F2F41E20100289624 /* KotlinStringCollection.swift in Sources */,
 				B0385B302F41E20100289624 /* KotlinStringRegex.swift in Sources */,
 				B0385B312F41E20100289624 /* KotlinStringIndex.swift in Sources */,
 				B0385B322F41E20100289624 /* KotlinStringTransform.swift in Sources */,
 				B01B96352F4D865300A27D04 /* KotlinFloatingPointProxy.swift in Sources */,
+				B01B96402F4DB51E00A27D04 /* KotlinMutableCollectionProxy.swift in Sources */,
+				B01B96412F4DB51E00A27D04 /* KotlinCollectionError.swift in Sources */,
+				B01B96422F4DB51E00A27D04 /* KotlinCollectionProxy.swift in Sources */,
+				B01B96432F4DB51E00A27D04 /* Collection+Kotlin.swift in Sources */,
 				B01B96362F4D865300A27D04 /* KotlinNumberErrors.swift in Sources */,
 				B01B96372F4D865300A27D04 /* KotlinNumberProxy.swift in Sources */,
 				B01B96382F4D865300A27D04 /* KotlinNumberRange.swift in Sources */,
@@ -279,6 +347,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0385B3C2F41E2AA00289624 /* SwiftKTTests.swift in Sources */,
+				B01B964D2F4DB55100A27D04 /* WindowingTests.swift in Sources */,
+				B01B964E2F4DB55100A27D04 /* AggregationTests.swift in Sources */,
+				B01B964F2F4DB55100A27D04 /* GroupingTests.swift in Sources */,
+				B01B96502F4DB55100A27D04 /* KotlinCollectionProxyTests.swift in Sources */,
 				B01B963A2F4D866300A27D04 /* KotlinNumberTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
